@@ -25,49 +25,85 @@ function getHumanChoice() {
     return val;
 }
 
+function updateScore(humanScore, computerScore) {
+    const body = document.querySelector("body");
+    const previous = document.getElementById("current");
+
+    if (previous) {
+        body.removeChild(previous);
+    }
+
+    const currentScore = document.createElement("div");
+    currentScore.setAttribute("id", "current");
+    currentScore.textContent = "Current Score: "  + humanScore.toString() + 
+        " to " + computerScore.toString();
+
+    if (body.firstChild) {
+        body.insertBefore(currentScore, body.firstChild);
+    } else {
+        body.appendChild(currentScore);
+    }
+}
+
 function playGame() {
     let humanScore = 0;
     let computerScore = 0;
 
+    updateScore(humanScore, computerScore);
+
+    const body = document.querySelector("body");
+
     function playRound(humanChoice, computerChoice) {
         const humanChoiceLowerCase = humanChoice.toLowerCase();
         const computerChoiceLowerCase = computerChoice.toLowerCase();
-        const winScenarios = {rock: "scissors", paper: "rock", scissors: "paper"};
-    
+        const winScenarios = {rock: "scissors", 
+                              paper: "rock", 
+                              scissors: "paper"};
+
+        const lastResult = document.createElement("div");
+
         if (humanChoiceLowerCase === computerChoiceLowerCase) {
-            console.log("It's a draw!");
+            lastResult.textContent = "It's a draw!";
+            body.appendChild(lastResult);
         } else if (computerChoiceLowerCase === winScenarios[humanChoiceLowerCase]){
-            console.log("You win! " + humanChoice + " beats " + computerChoice);
             humanScore++;
+            updateScore(humanScore, computerScore);
+            lastResult.textContent = "You win! " + humanChoice + " beats " + 
+                computerChoice;
+            body.appendChild(lastResult);
         } else {
-            console.log("You lose! " + computerChoice + " beats " + humanChoice);
             computerScore++;
+            updateScore(humanScore, computerScore);
+            lastResult.textContent = "You lose! " + computerChoice + " beats " + 
+                humanChoice;
+            body.appendChild(lastResult);
+        }
+
+        const finalScore = document.createElement("div");
+
+        if (humanScore === 5) {
+            body.innerHTML = '';
+            finalScore.textContent = "You Win! Final Score: " + 
+                humanScore.toString() + " to " + computerScore.toString();
+            body.appendChild(finalScore);
+        } else if (computerScore === 5) {
+            body.innerHTML = '';
+            finalScore.textContent = "You Lose! Final Score: " + 
+                humanScore.toString() + " to " + computerScore.toString();
+            body.appendChild(finalScore);
         }
     }
 
-    for (let i = 0; i < 5; i++) {
-        const humanSelection = getHumanChoice();
-        const computerSelection = getComputerChoice();
-    
-        playRound(humanSelection, computerSelection);
-    }
+    const btn = document. querySelectorAll("button");
 
-    if (humanScore === computerScore) {
-        console.log("It's a draw! Final score: " + humanScore.toString() + 
-                    " to " + computerScore.toString());
-    } else if (humanScore > computerScore) {
-        console.log("You win!");
-    } else {
-        console.log("You lost!")
-    }
-    
-    console.log("Final score: " + humanScore.toString() + 
-                    " to " + computerScore.toString());
+    btn.forEach((button) => {
+       button.addEventListener("click", () => {
+          const humanSelection = button.textContent;
+          const computerSelection = getComputerChoice();
 
+          playRound(humanSelection, computerSelection);
+       });
+    }); 
 }
 
 playGame();
-
-
-
-
